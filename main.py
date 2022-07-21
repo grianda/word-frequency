@@ -2,18 +2,38 @@
 
 import requests
 import json
+import re
 
-def get_lyrics(title, artist):
-    req = requests.get(str.format('https://api.lyrics.ovh/v1/{}/{}', title, artist))
+def get_lyrics(artist, title):
+    req = requests.get(str.format('https://api.lyrics.ovh/v1/{}/{}', artist, title))
     if req.status_code == 200:
         data = json.loads(req.content)
+        if "Paroles de la chanson" == data['lyrics'][:21]:
+            print('trace')
+            return data['lyrics'].split('\r\n', 2)[1]
         return data['lyrics']
     else:
         return None
 
+def word_freq(lyrics):
+    words = re.split('[\.\"\',;:!?\(\)\[\]\{\}\<\>]*[ \n\r]+[\.\"\',;:!?\(\)\[\]\{\}\<\>]*', lyrics)
+    freq = {}
+    for word in words:
+        try:
+            freq[word.lower()] += 1
+        except KeyError:
+            freq[word.lower()] = 1
+    return freq
+
 if __name__ == '__main__':
-    lyrics = get_lyrics("Coldplay", "Paradise")
-    if lyrics == None:
+    lyrics = get_lyrics("Carly Rae Jepsen", "Run Away with Me")
+    """if lyrics == None:
         print("lyrics not found")
     else:
-        print("successful")
+        print(lyrics)"""
+    freq = word_freq(lyrics)
+    #print(freq)
+    f = open("lyrics.csv", "w")
+    for word in freq:
+        f.write(str.format("{},{}\n", word, freq[word]))
+    f.close()
