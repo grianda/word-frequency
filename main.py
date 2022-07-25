@@ -25,15 +25,27 @@ def word_freq(lyrics):
             freq[word.lower()] = 1
     return freq
 
+def sort_by_occ(dict):
+    words = []
+    for word in dict:
+        i = 0
+        while i < len(words) and dict[word] <= dict[words[i]]:
+            i += 1
+        words = words[:i] + [word] + words[i:]
+    return words
+
 if __name__ == '__main__':
     lyrics = get_lyrics("Carly Rae Jepsen", "Run Away with Me")
-    """if lyrics == None:
-        print("lyrics not found")
-    else:
-        print(lyrics)"""
+
+    if lyrics == None:
+        print("No lyrics found")
+        quit()
+    
     freq = word_freq(lyrics)
-    #print(freq)
+    
+    words = sort_by_occ(freq)
+    
     f = open("lyrics.csv", "w")
-    for word in freq:
+    for word in words:
         f.write(str.format("{},{}\n", word, freq[word]))
     f.close()
