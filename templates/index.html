@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div>
+        <p>
+            {% for word in words %}
+                {{ word }}, {{ freq[word] }}<br>
+            {% endfor %}
+        </p>
+    </div>
+{% endblock content %}
